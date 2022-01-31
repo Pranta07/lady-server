@@ -27,9 +27,20 @@ async function run() {
         const recentCollection = database.collection("Recent");
         const randomCollection = database.collection("Random");
 
-        //get api for trending products
-        app.get("/trending", async (req, res) => {
-            const result = await trendingCollection.find({}).toArray();
+        //get api for products
+        app.get("/products", async (req, res) => {
+            const type = req.query.type;
+            let collection;
+            if (type === "trending") {
+                collection = trendingCollection;
+            } else if (type == "popular") {
+                collection = popularCollection;
+            } else if (type == "recent") {
+                collection = recentCollection;
+            } else if (type == "random") {
+                collection = randomCollection;
+            }
+            const result = await collection.find({}).toArray();
             res.json(result);
         });
 
