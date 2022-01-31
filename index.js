@@ -23,6 +23,9 @@ async function run() {
         // console.log("database connected");
         const database = client.db("LadyShop");
         const trendingCollection = database.collection("Trending");
+        const popularCollection = database.collection("Popular");
+        const recentCollection = database.collection("Recent");
+        const randomCollection = database.collection("Random");
 
         //get api for trending products
         app.get("/trending", async (req, res) => {
@@ -30,12 +33,24 @@ async function run() {
             res.json(result);
         });
 
-        //get api for single trending product
-        app.get("/trendingProduct/:id", async (req, res) => {
+        //get api for single product
+        app.get("/singleProduct/:id", async (req, res) => {
             const query = {
                 _id: ObjectId(req.params.id),
             };
-            const result = await trendingCollection.findOne(query);
+            // console.log(req.query.type);
+            const type = req.query.type;
+            let collection;
+            if (type === "trending") {
+                collection = trendingCollection;
+            } else if (type == "popular") {
+                collection = popularCollection;
+            } else if (type == "recent") {
+                collection = recentCollection;
+            } else if (type == "random") {
+                collection = randomCollection;
+            }
+            const result = await collection.findOne(query);
             res.json(result);
         });
     } finally {
