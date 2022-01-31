@@ -30,8 +30,8 @@ async function run() {
             res.json(result);
         });
 
-        //get api for singleProduct
-        app.get("/singleProduct/:id", async (req, res) => {
+        //get api for single trending product
+        app.get("/trendingProduct/:id", async (req, res) => {
             const query = {
                 _id: ObjectId(req.params.id),
             };
