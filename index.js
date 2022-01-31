@@ -1,5 +1,7 @@
 const express = require("express");
 const { MongoClient } = require("mongodb");
+require("dotenv").config();
+
 const app = express();
 const port = process.env.PORT || 5000;
 
@@ -10,12 +12,15 @@ const client = new MongoClient(uri, {
     useUnifiedTopology: true,
 });
 
-client.connect((err) => {
-    const collection = client.db("test").collection("devices");
-    // perform actions on the collection object
-    console.log("database connected");
-    // client.close();
-});
+async function run() {
+    try {
+        await client.connect();
+        console.log("database connected");
+    } finally {
+        // await client.close();
+    }
+}
+run().catch(console.dir);
 
 app.get("/", (req, res) => {
     res.send("lady running!");
