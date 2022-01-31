@@ -26,6 +26,7 @@ async function run() {
         const popularCollection = database.collection("Popular");
         const recentCollection = database.collection("Recent");
         const randomCollection = database.collection("Random");
+        const catalogCollection = database.collection("Catalog");
 
         //get api for products
         app.get("/products", async (req, res) => {
@@ -39,6 +40,8 @@ async function run() {
                 collection = recentCollection;
             } else if (type == "random") {
                 collection = randomCollection;
+            } else if (type == "catalog") {
+                collection = catalogCollection;
             }
             const result = await collection.find({}).toArray();
             res.json(result);
@@ -60,6 +63,8 @@ async function run() {
                 collection = recentCollection;
             } else if (type == "random") {
                 collection = randomCollection;
+            } else if (type == "catalog") {
+                collection = catalogCollection;
             }
             const result = await collection.findOne(query);
             res.json(result);
