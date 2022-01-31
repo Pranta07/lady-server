@@ -2,6 +2,7 @@ const express = require("express");
 const { MongoClient } = require("mongodb");
 require("dotenv").config();
 const cors = require("cors");
+const ObjectId = require("mongodb").ObjectId;
 
 const app = express();
 const port = process.env.PORT || 5000;
@@ -23,8 +24,18 @@ async function run() {
         const database = client.db("LadyShop");
         const trendingCollection = database.collection("Trending");
 
+        //get api for trending products
         app.get("/trending", async (req, res) => {
             const result = await trendingCollection.find({}).toArray();
+            res.json(result);
+        });
+
+        //get api for singleProduct
+        app.get("/singleProduct/:id", async (req, res) => {
+            const query = {
+                _id: ObjectId(req.params.id),
+            };
+            const result = await trendingCollection.findOne(query);
             res.json(result);
         });
     } finally {
