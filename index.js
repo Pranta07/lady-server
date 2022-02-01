@@ -22,29 +22,28 @@ async function run() {
         await client.connect();
         // console.log("database connected");
         const database = client.db("LadyShop");
-        const trendingCollection = database.collection("Trending");
-        const popularCollection = database.collection("Popular");
-        const recentCollection = database.collection("Recent");
-        const randomCollection = database.collection("Random");
-        const catalogCollection = database.collection("Catalog");
+        const productsCollection = database.collection("products");
 
         //get api for products
         app.get("/products", async (req, res) => {
             const type = req.query.type;
-            let collection;
-            if (type === "trending") {
-                collection = trendingCollection;
-            } else if (type == "popular") {
-                collection = popularCollection;
-            } else if (type == "recent") {
-                collection = recentCollection;
-            } else if (type == "random") {
-                collection = randomCollection;
-            } else if (type == "catalog") {
-                collection = catalogCollection;
+            const page = req.query.page;
+            const query = type === "catalog" ? {} : { type };
+
+            const cursor = productsCollection.find(query);
+
+            const count = await cursor.count();
+            let result;
+            if (type === "catalog") {
+                result = await cursor
+                    .skip(page * 8)
+                    .limit(8)
+                    .toArray();
+            } else {
+                result = await cursor.toArray();
             }
-            const result = await collection.find({}).toArray();
-            res.json(result);
+
+            res.json({ count, result });
         });
 
         //get api for single product
@@ -52,21 +51,7 @@ async function run() {
             const query = {
                 _id: ObjectId(req.params.id),
             };
-            // console.log(req.query.type);
-            const type = req.query.type;
-            let collection;
-            if (type === "trending") {
-                collection = trendingCollection;
-            } else if (type == "popular") {
-                collection = popularCollection;
-            } else if (type == "recent") {
-                collection = recentCollection;
-            } else if (type == "random") {
-                collection = randomCollection;
-            } else if (type == "catalog") {
-                collection = catalogCollection;
-            }
-            const result = await collection.findOne(query);
+            const result = await productsCollection.findOne(query);
             res.json(result);
         });
     } finally {
