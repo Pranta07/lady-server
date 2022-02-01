@@ -24,6 +24,11 @@ async function run() {
         const database = client.db("LadyShop");
         const productsCollection = database.collection("products");
 
+        app.get("/allProducts", async (req, res) => {
+            const result = await productsCollection.find({}).toArray();
+            res.json(result);
+        });
+
         //get api for products
         app.get("/products", async (req, res) => {
             const type = req.query.type;
