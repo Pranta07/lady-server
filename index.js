@@ -176,7 +176,7 @@ async function run() {
                         },
                     }
                 );
-                console.log(result);
+                // console.log(result);
                 res.json(result);
             } else {
                 res.json({});
