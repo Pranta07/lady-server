@@ -3,6 +3,8 @@ const { MongoClient } = require("mongodb");
 require("dotenv").config();
 const cors = require("cors");
 const ObjectId = require("mongodb").ObjectId;
+const SSLCommerzPayment = require("sslcommerz");
+const { v4: uuidv4 } = require("uuid");
 
 const app = express();
 const port = process.env.PORT || 5000;
@@ -23,6 +25,7 @@ async function run() {
         // console.log("database connected");
         const database = client.db("LadyShop");
         const productsCollection = database.collection("products");
+        const ordersCollection = database.collection("orders");
 
         app.get("/allProducts", async (req, res) => {
             const result = await productsCollection.find({}).toArray();
@@ -58,6 +61,79 @@ async function run() {
             };
             const result = await productsCollection.findOne(query);
             res.json(result);
+        });
+
+        //payment initialization
+        app.post("/init", (req, res) => {
+            const data = {
+                total_amount: req.body.total,
+                currency: "BDT",
+                tran_id: uuidv4(),
+                payment_status: false,
+                success_url: "http://localhost:5000/success",
+                fail_url: "http://localhost:5000/fail",
+                cancel_url: "http://localhost:5000/cancel",
+                ipn_url: "http://localhost:5000/ipn",
+                shipping_method: "Courier",
+                product_name: "Lady",
+                product_category: "dress",
+                product_profile: "general",
+                ordered_products: req.body.products,
+                cus_name: req.body.firstName,
+                cus_email: req.body.email,
+                cus_add1: req.body.street,
+                cus_add2: "Dhaka",
+                cus_city: req.body.city,
+                cus_state: req.body.region,
+                cus_postcode: req.body.postCode,
+                cus_country: req.body.country,
+                cus_phone: req.body.phone,
+                cus_fax: req.body.phone,
+                ship_name: "Customer Name",
+                ship_add1: "Dhaka",
+                ship_add2: "Dhaka",
+                ship_city: "Dhaka",
+                ship_state: "Dhaka",
+                ship_postcode: 1000,
+                ship_country: "Bangladesh",
+            };
+            console.log(data);
+            //insert this data into database...
+
+            const sslcommer = new SSLCommerzPayment(
+                process.env.STORE_ID,
+                process.env.STORE_PASS,
+                false
+            ); //true for live default false for sandbox
+            sslcommer.init(data).then((data) => {
+                //process the response that got from sslcommerz
+                //https://developer.sslcommerz.com/doc/v4/#returned-parameters
+                // console.log(data);
+                if (data.GatewayPageURL) {
+                    res.json(data.GatewayPageURL);
+                } else {
+                    res.status(400).json({
+                        message: "Payment Session Failed!",
+                    });
+                }
+            });
+        });
+
+        app.post("/success", async (req, res) => {
+            console.log(req);
+            //update the data by finding using tran_id from req.body
+            //set val id to this data from req.body for validation purpose...
+            res.status(200).redirect("http://localhost:3000/success");
+        });
+        app.post("/fail", async (req, res) => {
+            // console.log(req.body);
+            //delete the data from database using tran_id from req.body
+            res.redirect("http://localhost:3000");
+        });
+        app.post("/cancel", async (req, res) => {
+            // console.log(req.body);
+            //delete the data from database using tran_id from req.body
+            res.redirect("http://localhost:3000");
         });
     } finally {
         // await client.close();
