@@ -125,6 +125,14 @@ async function run() {
             // console.log(req.body);
             //update the data by finding using tran_id from req.body
             //set val id to this data from req.body for validation purpose...
+            const filter = { tran_id: req.body.tran_id };
+            const updateDoc = {
+                $set: {
+                    val_id: req.body.val_id,
+                },
+            };
+            const order = await ordersCollection.updateOne(filter, updateDoc);
+
             return res.status(200).redirect("http://localhost:3000/success");
             // return res.status(200).json(req.body);
         });
