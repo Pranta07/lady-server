@@ -12,6 +12,7 @@ const port = process.env.PORT || 5000;
 //middleware
 app.use(cors());
 app.use(express.json());
+app.use(express.urlencoded({ extended: true }));
 
 const uri = `mongodb+srv://${process.env.DB_USER}:${process.env.DB_PASS}@cluster0.yxq3j.mongodb.net/myFirstDatabase?retryWrites=true&w=majority`;
 const client = new MongoClient(uri, {
@@ -64,7 +65,7 @@ async function run() {
         });
 
         //payment initialization
-        app.post("/init", (req, res) => {
+        app.post("/init", async (req, res) => {
             const data = {
                 total_amount: req.body.total,
                 currency: "BDT",
@@ -99,6 +100,7 @@ async function run() {
             };
             console.log(data);
             //insert this data into database...
+            const order = await ordersCollection.insertOne(data);
 
             const sslcommer = new SSLCommerzPayment(
                 process.env.STORE_ID,
@@ -120,20 +122,21 @@ async function run() {
         });
 
         app.post("/success", async (req, res) => {
-            console.log(req);
+            // console.log(req.body);
             //update the data by finding using tran_id from req.body
             //set val id to this data from req.body for validation purpose...
-            res.status(200).redirect("http://localhost:3000/success");
+            return res.status(200).redirect("http://localhost:3000/success");
+            // return res.status(200).json(req.body);
         });
         app.post("/fail", async (req, res) => {
             // console.log(req.body);
             //delete the data from database using tran_id from req.body
-            res.redirect("http://localhost:3000");
+            return res.status(400).redirect("http://localhost:3000");
         });
         app.post("/cancel", async (req, res) => {
             // console.log(req.body);
             //delete the data from database using tran_id from req.body
-            res.redirect("http://localhost:3000");
+            return res.status(200).redirect("http://localhost:3000");
         });
     } finally {
         // await client.close();
