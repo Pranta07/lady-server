@@ -161,6 +161,27 @@ async function run() {
             const order = await ordersCollection.findOne(filter);
             res.json(order);
         });
+
+        //post api to validate the payment
+        app.post("/validate", async (req, res) => {
+            const { tran_id, val_id } = req.body;
+            const order = await ordersCollection.findOne({ tran_id });
+
+            if (order.val_id === val_id) {
+                const result = await ordersCollection.updateOne(
+                    { tran_id },
+                    {
+                        $set: {
+                            payment_status: true,
+                        },
+                    }
+                );
+                console.log(result);
+                res.json(result);
+            } else {
+                res.json({});
+            }
+        });
     } finally {
         // await client.close();
     }
