@@ -98,7 +98,7 @@ async function run() {
                 ship_postcode: 1000,
                 ship_country: "Bangladesh",
             };
-            console.log(data);
+            // console.log(data);
             //insert this data into database...
             const order = await ordersCollection.insertOne(data);
 
@@ -133,7 +133,9 @@ async function run() {
             };
             const order = await ordersCollection.updateOne(filter, updateDoc);
 
-            return res.status(200).redirect("http://localhost:3000/success");
+            return res
+                .status(200)
+                .redirect(`http://localhost:3000/success/${req.body.tran_id}`);
             // return res.status(200).json(req.body);
         });
         app.post("/fail", async (req, res) => {
@@ -151,6 +153,13 @@ async function run() {
             const order = await ordersCollection.deleteOne(filter);
 
             return res.status(200).redirect("http://localhost:3000");
+        });
+
+        //get api for specific order by tran_id
+        app.get("/orders/:id", async (req, res) => {
+            const filter = { tran_id: req.params.id };
+            const order = await ordersCollection.findOne(filter);
+            res.json(order);
         });
     } finally {
         // await client.close();
