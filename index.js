@@ -139,11 +139,17 @@ async function run() {
         app.post("/fail", async (req, res) => {
             // console.log(req.body);
             //delete the data from database using tran_id from req.body
+            const filter = { tran_id: req.body.tran_id };
+            const order = await ordersCollection.deleteOne(filter);
+
             return res.status(400).redirect("http://localhost:3000");
         });
         app.post("/cancel", async (req, res) => {
             // console.log(req.body);
             //delete the data from database using tran_id from req.body
+            const filter = { tran_id: req.body.tran_id };
+            const order = await ordersCollection.deleteOne(filter);
+
             return res.status(200).redirect("http://localhost:3000");
         });
     } finally {
