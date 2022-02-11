@@ -71,10 +71,10 @@ async function run() {
                 currency: "BDT",
                 tran_id: uuidv4(),
                 payment_status: false,
-                success_url: "http://localhost:5000/success",
-                fail_url: "http://localhost:5000/fail",
-                cancel_url: "http://localhost:5000/cancel",
-                ipn_url: "http://localhost:5000/ipn",
+                success_url: "https://ancient-dawn-22893.herokuapp.com/success",
+                fail_url: "https://ancient-dawn-22893.herokuapp.com/fail",
+                cancel_url: "https://ancient-dawn-22893.herokuapp.com/cancel",
+                ipn_url: "https://ancient-dawn-22893.herokuapp.com/ipn",
                 shipping_method: "Courier",
                 product_name: "Lady",
                 product_category: "dress",
@@ -135,7 +135,9 @@ async function run() {
 
             return res
                 .status(200)
-                .redirect(`http://localhost:3000/success/${req.body.tran_id}`);
+                .redirect(
+                    `https://ladyecommerce-d15fd.web.app/success/${req.body.tran_id}`
+                );
             // return res.status(200).json(req.body);
         });
         app.post("/fail", async (req, res) => {
@@ -144,7 +146,9 @@ async function run() {
             const filter = { tran_id: req.body.tran_id };
             const order = await ordersCollection.deleteOne(filter);
 
-            return res.status(400).redirect("http://localhost:3000");
+            return res
+                .status(400)
+                .redirect("https://ladyecommerce-d15fd.web.app");
         });
         app.post("/cancel", async (req, res) => {
             // console.log(req.body);
@@ -152,7 +156,9 @@ async function run() {
             const filter = { tran_id: req.body.tran_id };
             const order = await ordersCollection.deleteOne(filter);
 
-            return res.status(200).redirect("http://localhost:3000");
+            return res
+                .status(200)
+                .redirect("https://ladyecommerce-d15fd.web.app");
         });
 
         //get api for specific order by tran_id
