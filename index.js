@@ -198,6 +198,18 @@ async function run() {
             // console.log(result);
             res.json(result);
         });
+
+        // post api to save user in db
+        app.post("/saveUser", async (req, res) => {
+            const user = req.body;
+            // console.log(user);
+            const query = { email: user.email };
+            const result = await usersCollection.findOne(query);
+            //console.log(result);
+            if (!result) {
+                await usersCollection.insertOne(user);
+            }
+        });
     } finally {
         // await client.close();
     }
