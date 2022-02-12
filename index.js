@@ -27,6 +27,7 @@ async function run() {
         const database = client.db("LadyShop");
         const productsCollection = database.collection("products");
         const ordersCollection = database.collection("orders");
+        const usersCollection = database.collection("users");
 
         app.get("/allProducts", async (req, res) => {
             const result = await productsCollection.find({}).toArray();
@@ -187,6 +188,15 @@ async function run() {
             } else {
                 res.json({});
             }
+        });
+
+        //get api for a customer order
+        app.get("/orders", async (req, res) => {
+            const email = req.query.email;
+            const query = { cus_email: email };
+            const result = await ordersCollection.find(query).toArray();
+            // console.log(result);
+            res.json(result);
         });
     } finally {
         // await client.close();
