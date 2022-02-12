@@ -204,6 +204,13 @@ async function run() {
             res.json(result);
         });
 
+        //delete api to delete a specific order
+        app.delete("/orders/:id", async (req, res) => {
+            const query = { _id: ObjectId(req.params.id) };
+            const result = await ordersCollection.deleteOne(query);
+            res.json(result);
+        });
+
         // post api to save user in db
         app.post("/user", async (req, res) => {
             const user = req.body;
