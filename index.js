@@ -195,20 +195,25 @@ async function run() {
             const email = req.query.email;
             const query = { cus_email: email };
             const result = await ordersCollection.find(query).toArray();
-            // console.log(result);
             res.json(result);
         });
 
         // post api to save user in db
-        app.post("/saveUser", async (req, res) => {
+        app.post("/user", async (req, res) => {
             const user = req.body;
-            // console.log(user);
             const query = { email: user.email };
             const result = await usersCollection.findOne(query);
-            //console.log(result);
             if (!result) {
                 await usersCollection.insertOne(user);
             }
+        });
+
+        //get api for a specific user
+        app.get("/user/:email", async (req, res) => {
+            const email = req.params.email;
+            const query = { email };
+            const result = await usersCollection.findOne(query);
+            res.json(result);
         });
     } finally {
         // await client.close();
