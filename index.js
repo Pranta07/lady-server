@@ -198,6 +198,12 @@ async function run() {
             res.json(result);
         });
 
+        //get api for all orders
+        app.get("/allOrders", async (req, res) => {
+            const result = await ordersCollection.find({}).toArray();
+            res.json(result);
+        });
+
         // post api to save user in db
         app.post("/user", async (req, res) => {
             const user = req.body;
