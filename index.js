@@ -65,6 +65,19 @@ async function run() {
             res.json(result);
         });
 
+        //update a single product
+        app.put("/edit/:id", async (req, res) => {
+            const filter = { _id: ObjectId(req.params.id) };
+            const updateDoc = {
+                $set: req.body,
+            };
+            const result = await productsCollection.updateOne(
+                filter,
+                updateDoc
+            );
+            res.json(result);
+        });
+
         //payment initialization
         app.post("/init", async (req, res) => {
             const data = {
