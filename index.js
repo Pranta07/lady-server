@@ -78,6 +78,25 @@ async function run() {
             res.json(result);
         });
 
+        //bulk update stock api
+        app.put("/products/update/:status", async (req, res) => {
+            const filter = {
+                _id: {
+                    $in: req.body.map((id) => ObjectId(id)),
+                },
+            };
+            const updateDoc = {
+                $set: {
+                    stock: req.params.status === "true" ? true : false,
+                },
+            };
+            const result = await productsCollection.updateMany(
+                filter,
+                updateDoc
+            );
+            res.json(result);
+        });
+
         //payment initialization
         app.post("/init", async (req, res) => {
             const data = {
